@@ -1,26 +1,61 @@
-%% LyX 2.1.0 created this file.  For more info, see http://www.lyx.org/.
-%% Do not edit unless you really know what you are doing.
-\documentclass[russian]{article}
-\usepackage[T2A,T1]{fontenc}
+\documentclass[a4paper]{article}
+
+
+\usepackage[russian]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage[a4paper]{geometry}
+\usepackage{graphicx}
 \usepackage{qtree}
-\geometry{verbose,tmargin=1cm,bmargin=0cm,lmargin=0cm,rmargin=0cm}
-
-\makeatletter
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
-\DeclareRobustCommand{\cyrtext}{%
-  \fontencoding{T2A}\selectfont\def\encodingdefault{T2A}}
-\DeclareRobustCommand{\textcyr}[1]{\leavevmode{\cyrtext #1}}
-\AtBeginDocument{\DeclareFontEncoding{T2A}{}{}}
 
 
-\makeatother
+\title{Лабораторная работа №4}
+\author{Антипов Денис, гр. 5539 (вариант 17)}
 
-\usepackage{babel}
 \begin{document}
+\maketitle
 
-\Tree [ pow x1 [ cos [ plus [ minus [ cos x1 ] [ exp x5 ] ] [ abs [ minus 7 x7 ] ] ] ] ] 
+\section{Описание задачи}
+Требуется реализовать алгоритм, находящий функцию наиболее близкую к
+$$f(x) = \sum_{i = 1}^{9} i * x_i^2$$
+с помощью различных комбинаций функций $+$, $-$, $*$, $/$, $\cos$, $\sin$, $|x|$, $pow$, $exp$ на гиперкубе $x_i \in [-5.12; 5.12]$
+
+
+\section{Описание алгоритма}
+Алгоритм использует древовидное представление деревьев. В качестве фитнесс-функции используется среднеквадратичное отклонение от эталона по случайной выборке значений.
+
+Оператор редукции выбирает особи популяции, чьи среднеквадратичное отклонение не является NaN или $\infty$ с вероятностями, обратно пропорциональными их фитнес-функциям.
+
+Оператор кроссинговера выбирает 2 случайных вершины у родителей и меняет их местами.
+
+Пример двух родителей:
+
+\begin{tabular}{cc}
+\Tree [.mySin [.myCos [.exp [.power x7 x8 ] ] ] ] 
+&
+\Tree [.minus x1 [.mul [.exp [.myCos x6 ] ] [.mySin [.minus 5 x4 ] ] ] ] 
+\end{tabular}
+
+Их дети:
+
+\begin{tabular}{cc}
+\Tree [.mySin [.myCos x1 ] ] 
+&
+\Tree [.minus [.exp [.power x7 x8 ] ] [.mul [.exp [.myCos x6 ] ] [.mySin [.minus 5 x4 ] ] ] ] 
+\end{tabular}
+
+Оператор мутации выбирает случайную вершину в дереве (кроме корня), удаляет ее и выращивает вместо нее новое дерево небольшой глубины.
+
+Пример работы оператора мутации:
+
+\begin{tabular}{cc}
+\Tree [.minus [.myCos [.plus x0 [.abs [.mySin [.plus [.power x6 x1 ] [.minus 9 x6 ] ] ] ] ] ] x8 ] 
+&
+\Tree [.minus [.myCos [.plus x0 [.abs [.mySin [.myCos [.abs [.myCos [.abs x6 ] ] ] ] ] ] ] ] x8 ] 
+\end{tabular}
+
+\section{Результаты работы алгоритма}
+
+Результаты в моем случае неудовлетворительны, так как у меня нет достаточной вычислительной мощи для того, чтобы приблизить функцию на всем участке исследования. Вместо этого при подсчете фитнес-функции я каждый раз делаю небольшую выборку точек из рассматриваемого множества и смотрю среднеквадратичную разность на них. Попытки создать сетку, более-менее покрывающую весь гиперкуб к успеху не привела, так как даже если в каждом измерении было всего по $3$ точки, то всего понадобилосьб бы $3^9$ итераций, чтобы посчитать среднее квадратичное отклонение. На моем ноутбуке подсчет фитнес-функции длился несколько минут.
+
+Из-за маленького размера сетки алгоритм всегда в течение 15 итераций сходился к функции, являющейся линейной от одной переменной. Расширение популяции ничего не изменило. Даже, скорее, ускорило сходимость. Увеличение размера выборки также не дало результата.
 
 \end{document}
