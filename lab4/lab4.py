@@ -47,7 +47,8 @@ twoArgFunctions = [plus, minus, mul, div, power]
 oneArgFunctions = [abs, mySin, myCos, exp]
 zeroArgFunctions = ['var', 'const']
 
-maxDepth = 7
+maxDepth = 10
+minDepth = 3
 
 # constants
 crossingoverProb = 0.9
@@ -115,12 +116,12 @@ class node:
         if self.function in zeroArgFunctions:
             return self
         elif self.function in oneArgFunctions:
-            if random() < 0.3:
+            if random() < 0.4:
                 return self
             else:
                 return self.children.selectNode()
         else:
-            if random() < 0.3:
+            if random() < 0.4:
                 return self
             elif random() < 0.5:
                 return self.children[0].selectNode()
@@ -173,6 +174,17 @@ def genTree(depth):
             return node('const', randint(1, 9))
         else:
             return node('var', randint(0, 8))
+    elif minDepth > depth:
+        f = functions[randint(0, 8)]
+        if f in oneArgFunctions:
+            res = node(f, genTree(depth + 1))
+            res.children.parent = res
+            return res
+        else:
+            res = node(f, [genTree(depth + 1), genTree(depth + 1)])
+            res.children[0].parent = res
+            res.children[1].parent = res
+            return res
     else:
         r = random()
         if r < 0.02:
